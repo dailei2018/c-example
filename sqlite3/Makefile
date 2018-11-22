@@ -6,10 +6,10 @@ O_CMD = `find ./ -name '*.o'`
 
 CORE_INCS =
 
-build: create_insert.o prepare_insert.o
+build: create_insert.o prepare_insert.o prepare_select.o
 	$(CC) -o create_insert create_insert.o $(LIBS)
 	$(CC) -o prepare_insert prepare_insert.o $(LIBS)
-									
+	$(CC) -o prepare_select prepare_select.o $(LIBS)							
 	rm -f $(O_CMD)
 
 
@@ -19,6 +19,9 @@ create_insert.o:
 prepare_insert.o:
 	$(CC) -c $(CFLAGS) $(CORE_INCS) -o prepare_insert.o prepare_insert.c
 
+prepare_select.o:
+	$(CC) -c $(CFLAGS) $(CORE_INCS) -o prepare_select.o prepare_select.c
+
 clean:
 	rm -f $(O_CMD)
-	rm -f create_insert prepare_insert
+	rm -f create_insert prepare_insert prepare_select

@@ -16,9 +16,8 @@ int main(int argc, char **argv){
     sql = "insert into person (name,age,amount) values (?,25,?);";
     sqlite3_prepare(db, sql, strlen(sql), &stmt, NULL);
 
-    // 2 means the second field, because we omit the 'id' which is the first field
-    sqlite3_bind_text(stmt, 2, "Json", -1, SQLITE_STATIC);
-    sqlite3_bind_int(stmt, 4, 33);
+    sqlite3_bind_text(stmt, 1, "Json", -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 2, 33);
 
     //execute sql
     rc = sqlite3_step(stmt);
@@ -32,8 +31,8 @@ int main(int argc, char **argv){
     //reset for next bind
     sqlite3_reset(stmt);
 
-    sqlite3_bind_text(stmt, 2, "Leo", -1, SQLITE_STATIC);
-    sqlite3_bind_int(stmt, 4, 2000);
+    sqlite3_bind_text(stmt, 1, "Leo", -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 2, 2000);
 
     //execute sql
     rc = sqlite3_step(stmt);

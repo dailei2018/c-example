@@ -21,4 +21,13 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName){
     return 0;
 }
 
+typedef struct person person_t;
+
+struct person {
+    int id;
+    int age;
+    int amount;
+    char *name;
+};
+
 #endif
