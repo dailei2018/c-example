@@ -8,6 +8,8 @@
 #include<stdio.h>	    //for printf
 #include<string.h>      //memset
 #include<sys/socket.h>	//for socket ofcourse
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include<stdlib.h>      //for exit(0);
 #include<stdarg.h>      //for va_start
 #include<errno.h>       //For errno - the error number
@@ -16,10 +18,10 @@
 
 #define BUFSIZE 1024
 
-#define SRCIP "192.168.1.10"
+#define SRCIP "192.168.1.111"
 #define SRCPORT 8881
 
-#define DSTIP "47.75.6.231"
+#define DSTIP "192.168.1.242"
 #define DSTPORT 1234
 
 void err_msg(const char *format, ...){
@@ -65,8 +67,8 @@ unsigned short csum(unsigned short *ptr,int nbytes)
 		sum+=oddbyte;
 	}
 
-	sum = (sum>>16)+(sum & 0xffff);
-	sum = sum + (sum>>16);
+	while(sum >> 16) sum = (sum >> 16) + (sum & 0xffff);
+
 	answer=(short)~sum;
 	
 	return(answer);
@@ -122,7 +124,6 @@ int main(){
     res = inet_pton(AF_INET, DSTIP, &iph->daddr);
     if(res == -1) err_msg("inet_pton:%s", strerror(errno));
 
-
     // Fill in the TCP header
 
     tcph->source = htons(SRCPORT);
@@ -157,11 +158,9 @@ int main(){
     psh.tcp_length = htons(sizeof(struct tcphdr) + msg_len);
 
     psize = sizeof(struct pseudo_header) + sizeof(struct tcphdr) + msg_len;
-
     char *pseudo_packet = malloc(psize);
     memcpy(pseudo_packet, &psh, sizeof(struct pseudo_header));
     memcpy(pseudo_packet + sizeof(struct pseudo_header), tcph, sizeof(struct tcphdr) + msg_len);
-
     tcph->check = csum( (unsigned short*) pseudo_packet , psize);
 
     struct sockaddr_in sin;
@@ -170,7 +169,7 @@ int main(){
     sin.sin_addr.s_addr = inet_addr(DSTIP);
 
     res = sendto (sfd, packet, iph->tot_len , 0, (struct sockaddr *) &sin, sizeof (sin));
-    if(res == -1) err_msg("inet_pton:%s", strerror(errno));
+    if(res == -1) err_msg("sendto:%s", strerror(errno));
 
     printf ("Syn packet sent len:%d\n" , iph->tot_len);
 
