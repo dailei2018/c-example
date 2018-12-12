@@ -54,3 +54,12 @@ const int *val = &one;
 if (setsockopt (s, IPPROTO_IP, IP_HDRINCL, val, sizeof (one)) < 0){
 	//error
 }
+
+1.socket(AF_INET, SOCK_RAW, IPPROTO_TCP|IPPROTO_UDP|IPPROTO_ICMP)
+send:kernel will fill in IP header
+recv:packet will not contain IP header
+
+2.socket(PF_PACKET, SOCK_RAW, htons(ETH_P_IP|ETH_P_ARP|ETH_P_ALL))
+send:you should fill in data link header
+recv:packet contain data link header
+
